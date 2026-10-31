@@ -1,35 +1,35 @@
 ; NASM ile Basit FAT12 Boot Sector Yapısı
 
-org 0x7C00          ; BIOS önyükleme sektörünü bu adrese yükler
-bits 16             ; 16-bit Gerçek Mod (Real Mode) kodlaması
+org 0x7C00          
+bits 16             
 
 start:
-    jmp short boot_code     ; BPB üzerinden atla
-    nop                     ; Kısa atlama sonrası 1 baytlık dolgu
+    jmp short boot_code    
+    nop                    
 
 ; FAT12 BIOS Parameter Block (BPB) - Standart Yapı
 
-oem_name        db "MSWIN4.1"   ; 8 Bayt OEM Adı
-bytes_per_sec   dw 512          ; Sektör başına bayt
-sec_per_cluster db 1            ; Küme başına sektör
-reserved_secs   dw 1            ; Rezerve edilen sektör sayısı (Boot Sektör)
-fat_count       db 2            ; FAT tablosu sayısı
-root_dir_entries dw 224         ; Kök dizindeki maksimum dosya sayısı
-total_sectors   dw 2880         ; Toplam sektör sayısı (1.44MB Floppy için)
-media_descriptor db 0xF0        ; Medya türü (0xF0 = 3.5" Floppy)
-sec_per_fat     dw 9            ; FAT başına sektör sayısı
-sec_per_track   dw 18           ; İz (track) başına sektör sayısı
-head_count      dw 2            ; Kafa (head) sayısı
-hidden_sectors  dd 0            ; Gizli sektör sayısı
-large_sectors   dd 0            ; Büyük sektör sayısı (Eğer total_sectors > 65535 ise)
+oem_name        db "MSWIN4.1"  
+bytes_per_sec   dw 512          
+sec_per_cluster db 1         
+reserved_secs   dw 1          
+fat_count       db 2          
+root_dir_entries dw 224        
+total_sectors   dw 2880         
+media_descriptor db 0xF0      
+sec_per_fat     dw 9            
+sec_per_track   dw 18          
+head_count      dw 2       
+hidden_sectors  dd 0           
+large_sectors   dd 0           
 
 ; Genişletilmiş Boot Kaydı (Extended Boot Record)
-drive_number    db 0x00         ; Sürücü numarası (0x00 = A: Floppy)
-reserved        db 0x00         ; Rezerve Windows NT alanı
+drive_number    db 0x00        
+reserved        db 0x00       
 boot_signature  db 0x29         ; Genişletilmiş boot imzası
-volume_id       dd 0x12345678   ; Seri numarası (Rastgele)
+volume_id       dd 0x12345678  
 volume_label    db "FAT12BOOT  " ; 11 Bayt Disk Etiketi
-file_system     db "FAT12   "   ; 8 Bayt Dosya Sistemi Türü
+file_system     db "FAT12   "  
 
 
 ; Gerçek Önyükleme Kod Başlangıcı
@@ -47,16 +47,15 @@ boot_code:
     call print_string
 
 halt:
-    cli                         ; Kesmeleri kapat
+    cli                        
     hlt                         ; CPU'yu durdur
-    jmp halt                    ; Sonsuz döngü
-
+    jmp halt                   
 ; Yardımcı fnc.
 print_string:
     mov ah, 0x0E                ; BIOS TTY video fonksiyonu
 .loop:
     lodsb                       ; AL = [SI] ve SI++
-    cmp al, 0                   ; String sonu mu? (Null terminator)
+    cmp al, 0               
     je .done
     int 0x10                    ; Karakteri ekrana bas
     jmp .loop
@@ -64,7 +63,7 @@ print_string:
     ret
 
 ; Veri Alanı ve Dolgu
-msg_hello db "Merhaba! FAT12 Disketi Basariyla Yuklendi.", 0x0D, 0x0A, 0
+msg_hello db "Merhaba! Fat12 oldu..", 0x0D, 0x0A, 0
 
 ; Sektörü 510 bayta tamamla, kalan yerleri sıfır yap.
 times 510 - ($ - $$) db 0
